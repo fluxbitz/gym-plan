@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2-Week Gym Plan</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f1a; color: #e0e0e0; min-height: 100vh; }
+
+  header {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    padding: 24px 20px 16px;
+    text-align: center;
+    border-bottom: 2px solid #e94560;
+    position: sticky; top: 0; z-index: 100;
+  }
+  header h1 { font-size: 1.6rem; color: #fff; letter-spacing: 1px; }
+  header p { color: #888; font-size: 0.85rem; margin-top: 4px; }
+
+  .week-switch {
+    display: flex; justify-content: center; gap: 10px;
+    padding: 12px 10px 8px; background: #0f0f1a;
+    position: sticky; top: 82px; z-index: 99;
+  }
+  .week-btn {
+    padding: 8px 18px; border-radius: 20px; cursor: pointer;
+    background: #1a1a2e; border: 1px solid #2a2a4a;
+    color: #aaa; font-weight: 700; font-size: 0.85rem;
+    transition: all 0.25s;
+  }
+  .week-btn.active { background: #4fc3f7; color: #0f0f1a; border-color: #4fc3f7; }
+  .reset-btn {
+    padding: 8px 14px; border-radius: 20px; cursor: pointer;
+    background: transparent; border: 1px solid #e94560;
+    color: #e94560; font-weight: 700; font-size: 0.8rem;
+    transition: all 0.25s;
+  }
+  .reset-btn:hover { background: #e94560; color: #fff; }
+
+  .tabs {
+    display: flex; justify-content: center; gap: 6px;
+    padding: 8px 10px 12px; flex-wrap: wrap;
+    background: #0f0f1a; position: sticky; top: 128px; z-index: 98;
+  }
+  .tab {
+    padding: 10px 14px; border-radius: 8px; cursor: pointer;
+    background: #1a1a2e; border: 1px solid #2a2a4a; font-size: 0.78rem;
+    color: #aaa; transition: all 0.25s; font-weight: 600;
+  }
+  .tab:hover { border-color: #e94560; color: #fff; }
+  .tab.active { background: #e94560; color: #fff; border-color: #e94560; }
+  .tab .day-label { display: block; font-size: 0.62rem; font-weight: 400; opacity: 0.8; }
+
+  .day-content { display: none; padding: 10px 16px 40px; max-width: 700px; margin: 0 auto; }
+  .day-content.active { display: block; }
+
+  .day-header {
+    text-align: center; margin: 10px 0 20px;
+    padding: 16px; border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 1px solid #2a2a4a;
+  }
+  .day-header h2 { color: #e94560; font-size: 1.3rem; }
+  .day-header .muscles-targeted { color: #888; font-size: 0.8rem; margin-top: 4px; }
+  .day-header .duration { color: #4fc3f7; font-size: 0.75rem; margin-top: 6px; font-weight: 600; }
+
+  .exercise-card {
+    background: #1a1a2e; border-radius: 12px; padding: 16px;
+    margin-bottom: 14px; border: 1px solid #2a2a4a;
+    transition: border-color 0.3s;
+  }
+  .exercise-card:hover { border-color: #e94560; }
+  .exercise-card .exercise-top { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+  .equip-img {
+    width: 200px; height: 200px; flex-shrink: 0;
+    background: #0f0f1a; border-radius: 10px; overflow: hidden;
+    border: 1px solid #2a2a4a; margin-left: auto;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+    position: relative;
+  }
+  .equip-img img {
+    width: 100%; height: 100%; object-fit: cover;
+    position: absolute; top: 0; left: 0;
+    border-radius: 10px;
+  }
+  .equip-label {
+    font-size: 0.6rem; color: #fff; text-align: center;
+    white-space: nowrap; position: relative; z-index: 1;
+    background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 0 0 9px 9px;
+    width: 100%;
+  }
+
+  .muscle-img {
+    width: 90px; height: 90px; flex-shrink: 0;
+    background: #0f0f1a; border-radius: 10px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid #2a2a4a;
+  }
+  .muscle-img svg { width: 80px; height: 80px; }
+
+  .exercise-info { flex: 1; min-width: 180px; }
+  .exercise-info h3 { font-size: 1rem; color: #fff; margin-bottom: 4px; }
+  .exercise-info .muscle-name { font-size: 0.75rem; color: #e94560; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .sets-reps {
+    display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;
+  }
+  .sets-reps .badge {
+    padding: 6px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+  }
+  .badge.sets { background: #162447; color: #4fc3f7; }
+  .badge.reps { background: #1b2a1b; color: #81c784; }
+  .badge.rest { background: #2a1b2a; color: #ce93d8; }
+
+  .exercise-note {
+    margin-top: 10px; font-size: 0.78rem; color: #777;
+    padding-left: 10px; border-left: 2px solid #333;
+  }
+
+  .weight-row {
+    display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .weight-box {
+    flex: 1; min-width: 130px;
+    background: #0f0f1a;
+    border: 1px solid #2a2a4a;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .weight-box .weight-label {
+    font-size: 0.68rem; color: #888; text-transform: uppercase;
+    letter-spacing: 0.5px; font-weight: 700;
+  }
+  .weight-box.start { border-left: 3px solid #4fc3f7; }
+  .weight-box.last { border-left: 3px solid #81c784; }
+  .weight-box.start .weight-label { color: #4fc3f7; }
+  .weight-box.last .weight-label { color: #81c784; }
+  .weight-select {
+    background: #1a1a2e;
+    color: #fff;
+    border: 1px solid #2a2a4a;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+  }
+  .weight-select:focus { border-color: #e94560; }
+  .weight-select option { background: #1a1a2e; }
+
+  .progress-row {
+    display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; align-items: center;
+  }
+  .set-check {
+    width: 32px; height: 32px; border-radius: 6px; border: 2px solid #333;
+    background: transparent; color: #555; font-size: 0.75rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+  }
+  .set-check.done { background: #e94560; border-color: #e94560; color: #fff; }
+
+  .rest-btn {
+    padding: 6px 12px; border-radius: 6px; cursor: pointer;
+    background: #2a1b2a; border: 1px solid #ce93d8;
+    color: #ce93d8; font-size: 0.75rem; font-weight: 700;
+    transition: all 0.2s; margin-left: auto;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .rest-btn:hover { background: #ce93d8; color: #1a1a2e; }
+  .rest-btn.running { background: #ce93d8; color: #1a1a2e; animation: pulse 1s infinite; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Rest Timer Modal */
+  .timer-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1000; backdrop-filter: blur(6px);
+  }
+  .timer-overlay.active { display: flex; }
+  .timer-box {
+    background: linear-gradient(135deg, #1a1a2e, #2a1b2a);
+    border: 2px solid #ce93d8; border-radius: 20px;
+    padding: 32px 40px; text-align: center; min-width: 280px;
+    box-shadow: 0 20px 60px rgba(206, 147, 216, 0.3);
+  }
+  .timer-label { color: #ce93d8; font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+  .timer-display { font-size: 4.5rem; color: #fff; font-weight: 800; margin: 16px 0; font-variant-numeric: tabular-nums; }
+  .timer-exercise { color: #888; font-size: 0.85rem; margin-bottom: 20px; }
+  .timer-actions { display: flex; gap: 10px; justify-content: center; }
+  .timer-action-btn {
+    padding: 10px 18px; border-radius: 8px; cursor: pointer;
+    border: 1px solid #ce93d8; background: transparent;
+    color: #ce93d8; font-weight: 700; font-size: 0.85rem;
+    transition: all 0.2s;
+  }
+  .timer-action-btn:hover { background: #ce93d8; color: #1a1a2e; }
+  .timer-action-btn.danger { border-color: #e94560; color: #e94560; }
+  .timer-action-btn.danger:hover { background: #e94560; color: #fff; }
+
+  footer {
+    text-align: center; padding: 16px 20px 24px; color: #888; font-size: 0.85rem;
+    border-top: 1px solid #2a2a4a;
+    position: sticky; bottom: 0; background: #0f0f1a; z-index: 99;
+  }
+  .progress-bar-wrap {
+    max-width: 400px; margin: 0 auto 8px; height: 8px;
+    background: #1a1a2e; border-radius: 4px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; background: linear-gradient(90deg, #e94560, #4fc3f7);
+    border-radius: 4px; transition: width 0.3s;
+  }
+  .progress-text { font-weight: 600; }
+  .progress-text .done-count { color: #e94560; }
+  .progress-text .total-count { color: #4fc3f7; }
+
+  /* Spine & Sciatic section */
+  .spine-section {
+    margin-top: 24px;
+    padding: 18px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #122225, #0f1f2a);
+    border: 1px solid #2a4a4a;
+  }
+  .spine-section h3 {
+    color: #4fc3f7;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .spine-section .spine-subtitle {
+    font-size: 0.78rem; color: #888; margin-bottom: 14px;
+  }
+  .spine-card {
+    background: #0f1a22;
+    border: 1px solid #234040;
+    border-left: 3px solid #4fc3f7;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .spine-card .spine-head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 10px; flex-wrap: wrap;
+  }
+  .spine-img {
+    width: 110px; height: 65px; flex-shrink: 0;
+    background: #0a1218; border-radius: 8px;
+    border: 1px solid #234040;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .spine-img svg { width: 100%; height: 100%; display: block; }
+  .spine-card h4 { color: #fff; font-size: 0.92rem; }
+  .spine-card .spine-target {
+    font-size: 0.7rem; color: #4fc3f7; text-transform: uppercase;
+    letter-spacing: 0.5px; font-weight: 700;
+  }
+  .spine-card p {
+    color: #999; font-size: 0.8rem; line-height: 1.5; margin-top: 6px;
+  }
+  .spine-card .spine-dose {
+    display: inline-block; padding: 4px 10px; border-radius: 6px;
+    background: #1a2a35; color: #4fc3f7;
+    font-size: 0.72rem; font-weight: 700; margin-top: 8px;
+  }
+  .spine-card .spine-check {
+    width: 26px; height: 26px; border-radius: 6px; border: 2px solid #2a4040;
+    background: transparent; color: #4a7080; font-size: 0.7rem; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .spine-check.done { background: #4fc3f7; border-color: #4fc3f7; color: #0f1a22; }
+
+  /* Warm-up section */
+  .warmup-section {
+    margin-bottom: 24px;
+    padding: 18px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #251a08, #1e1608);
+    border: 1px solid #4a3a14;
+  }
+  .warmup-section h3 {
+    color: #ffb74d;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .warmup-section .warmup-subtitle {
+    font-size: 0.78rem; color: #888; margin-bottom: 14px;
+  }
+  .warmup-card {
+    background: #180f04;
+    border: 1px solid #3a2a0e;
+    border-left: 3px solid #ffb74d;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .warmup-card .warmup-head {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 10px; flex-wrap: wrap;
+  }
+  .warmup-img {
+    width: 110px; height: 65px; flex-shrink: 0;
+    background: #0e0904; border-radius: 8px;
+    border: 1px solid #3a2a0e;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .warmup-img svg { width: 100%; height: 100%; display: block; }
+  .warmup-card h4 { color: #fff; font-size: 0.92rem; }
+  .warmup-card .warmup-target {
+    font-size: 0.7rem; color: #ffb74d; text-transform: uppercase;
+    letter-spacing: 0.5px; font-weight: 700;
+  }
+  .warmup-card p {
+    color: #999; font-size: 0.8rem; line-height: 1.5; margin-top: 6px;
+  }
+  .warmup-card .warmup-dose {
+    display: inline-block; padding: 4px 10px; border-radius: 6px;
+    background: #251c08; color: #ffb74d;
+    font-size: 0.72rem; font-weight: 700; margin-top: 8px;
+  }
+  .warmup-card .warmup-check {
+    width: 26px; height: 26px; border-radius: 6px; border: 2px solid #3a2a0e;
+    background: transparent; color: #6a5020; font-size: 0.7rem; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .warmup-check.done { background: #ffb74d; border-color: #ffb74d; color: #1a1008; }
+
+  .muscle-highlight { fill: #e94560; opacity: 0.85; }
+  .muscle-outline { fill: none; stroke: #e94560; stroke-width: 1.5; opacity: 0.6; }
+  .body-base { fill: #2a2a4a; }
+  .body-outline { fill: none; stroke: #3a3a5a; stroke-width: 1; }
+
+  /* Confirm dialog */
+  .confirm-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: none; align-items: center; justify-content: center;
+    z-index: 1001; backdrop-filter: blur(6px);
+  }
+  .confirm-overlay.active { display: flex; }
+  .confirm-box {
+    background: linear-gradient(135deg, #1a1a2e, #2a1a2a);
+    border: 2px solid #e94560; border-radius: 16px;
+    padding: 24px 28px; text-align: center; max-width: 360px;
+  }
+  .confirm-box h3 { color: #e94560; font-size: 1.1rem; margin-bottom: 8px; }
+  .confirm-box p { color: #ccc; font-size: 0.85rem; margin-bottom: 18px; line-height: 1.5; }
+  .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>2-WEEK GYM PLAN</h1>
+  <p>14 Muscle Groups &bull; 5 Days/Week &bull; 1 Hour/Session</p>
+</header>
+
+<div class="week-switch">
+  <button class="week-btn active" id="week1Btn">Săptămâna 1</button>
+  <button class="week-btn" id="week2Btn">Săptămâna 2</button>
+  <button class="reset-btn" id="resetBtn" title="Reset progres pentru săptămâna nouă">&#x21bb; Reset Săptămână Nouă</button>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div id="content"></div>
+
+<!-- Rest Timer Modal -->
+<div class="timer-overlay" id="timerOverlay">
+  <div class="timer-box">
+    <div class="timer-label">Pauză</div>
+    <div class="timer-display" id="timerDisplay">00:00</div>
+    <div class="timer-exercise" id="timerExercise">—</div>
+    <div class="timer-actions">
+      <button class="timer-action-btn" id="timerAdd">+15s</button>
+      <button class="timer-action-btn" id="timerSub">-15s</button>
+      <button class="timer-action-btn danger" id="timerSkip">Skip</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Confirm Modal -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3>Săptămână nouă?</h3>
+    <p>Toate seturile bifate vor fi resetate. Această acțiune nu poate fi anulată.</p>
+    <div class="confirm-actions">
+      <button class="timer-action-btn" id="confirmCancel">Anulează</button>
+      <button class="timer-action-btn danger" id="confirmYes">Da, resetează</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+  <div class="progress-text"><span class="done-count" id="doneCount">0</span> / <span class="total-count" id="totalCount">0</span> seturi completate</div>
+</footer>
+
+<script>
+/* ============================================================
+   2-WEEK PROGRAM
+   Target groups: shoulders, chest, lats, trapezius, lowerback,
+   abdominals, quadriceps, hamstrings, calves, abductors,
+   adductors, biceps, triceps, forearms
+   ============================================================ */
+const weeks = [
+  /* ---------------------- WEEK 1 ---------------------- */
+  {
+    label: "Săptămâna 1",
+    days: [
+      {
+        day: "Luni", name: "Chest & Triceps", muscles: "Pectorali, Triceps",
+        exercises: [
+          { name: "Machine Chest Press", muscle: "Chest", sets: 4, reps: "8-10", rest: "90s", restSec: 90, note: "Apasă mânerele înainte, strânge pieptul la extensia completă", svg: "chest", equipImg: "Leverage_Chest_Press/0.jpg", equipName: "Chest Press" },
+          { name: "Incline Machine Press", muscle: "Upper Chest", sets: 4, reps: "10-12", rest: "75s", restSec: 75, note: "Reglează scaunul ca mânerele să fie la nivelul pieptului superior", svg: "chest", equipImg: "Leverage_Incline_Chest_Press/0.jpg", equipName: "Incline Press" },
+          { name: "Pec Deck Machine", muscle: "Chest (Isolation)", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Apropie pernuțele lent, strânge 1 secundă", svg: "chest", equipImg: "Butterfly/0.jpg", equipName: "Pec Deck" },
+          { name: "Cable Crossovers", muscle: "Inner Chest", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Strânge la contracția maximă, controlează revenirea", svg: "chest", equipImg: "Cable_Crossover/0.jpg", equipName: "Cable Machine" },
+          { name: "Tricep Rope Pushdowns", muscle: "Triceps (Lateral)", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Desfă coarda la final, strânge tricepșii", svg: "triceps", equipImg: "Triceps_Pushdown_-_Rope_Attachment/0.jpg", equipName: "Cable Machine" },
+          { name: "Cable Overhead Tricep Ext", muscle: "Triceps (Long Head)", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Întins în spate cu cablul, întindere completă", svg: "triceps", equipImg: "Cable_Rope_Overhead_Triceps_Extension/0.jpg", equipName: "Cable Machine" },
+          { name: "Tricep Dip Machine", muscle: "Triceps", sets: 3, reps: "12", rest: "45s", restSec: 45, note: "Torsul drept, apasă în jos complet", svg: "triceps", equipImg: "Dip_Machine/0.jpg", equipName: "Dip Machine" },
+        ]
+      },
+      {
+        day: "Marți", name: "Back & Biceps & Forearms", muscles: "Lats, Biceps, Antebrațe",
+        exercises: [
+          { name: "Lat Pulldown (Wide Grip)", muscle: "Lats", sets: 4, reps: "8-10", rest: "90s", restSec: 90, note: "Trage la pieptul superior, aplecă-te ușor pe spate", svg: "lats", equipImg: "Wide-Grip_Lat_Pulldown/0.jpg", equipName: "Lat Pulldown" },
+          { name: "Seated Cable Row", muscle: "Mid Back / Lats", sets: 4, reps: "10-12", rest: "75s", restSec: 75, note: "Trage la pieptul inferior, retrage scapulele", svg: "lats", equipImg: "Seated_Cable_Rows/0.jpg", equipName: "Cable Row" },
+          { name: "Machine Row (Chest Supported)", muscle: "Mid Back", sets: 4, reps: "10-12", rest: "75s", restSec: 75, note: "Împinge coatele înapoi, strânge omoplații", svg: "lats", equipImg: "Leverage_High_Row/0.jpg", equipName: "Row Machine" },
+          { name: "Straight-Arm Pulldown", muscle: "Lats (Isolation)", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Brațele drepte, trage bara până la coapse", svg: "lats", equipImg: "Straight-Arm_Pulldown/0.jpg", equipName: "Cable Machine" },
+          { name: "Machine Bicep Curl", muscle: "Biceps", sets: 3, reps: "10-12", rest: "60s", restSec: 60, note: "Amplitudine completă, negativă lentă", svg: "biceps", equipImg: "Machine_Bicep_Curl/0.jpg", equipName: "Curl Machine" },
+          { name: "Cable Hammer Curls (Rope)", muscle: "Brachialis", sets: 3, reps: "12", rest: "60s", restSec: 60, note: "Priză neutră pe coardă, strânge sus", svg: "biceps", equipImg: "Cable_Hammer_Curls_-_Rope_Attachment/0.jpg", equipName: "Cable Machine" },
+          { name: "Cable Wrist Curls", muscle: "Forearms", sets: 3, reps: "20", rest: "45s", restSec: 45, note: "Antebrațele pe genunchi, rulează încheieturile sus", svg: "forearms", equipImg: "Cable_Wrist_Curl/0.jpg", equipName: "Cable Machine" },
+        ]
+      },
+      {
+        day: "Miercuri", name: "Quads, Adductors & Calves", muscles: "Cvadricepși, Adductori, Gambe, Abdomen",
+        exercises: [
+          { name: "Leg Press", muscle: "Quads", sets: 4, reps: "8-10", rest: "120s", restSec: 120, note: "Picioarele la lățimea umerilor, împinge prin toată talpa", svg: "quads", equipImg: "Leg_Press/0.jpg", equipName: "Leg Press" },
+          { name: "Hack Squat Machine", muscle: "Quads", sets: 4, reps: "10-12", rest: "90s", restSec: 90, note: "Spatele lipit de pad, coboară până la paralel", svg: "quads", equipImg: "Hack_Squat/0.jpg", equipName: "Hack Squat" },
+          { name: "Leg Extension", muscle: "Quads (Isolation)", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Strânge și menține sus 1 secundă", svg: "quads", equipImg: "Leg_Extensions/0.jpg", equipName: "Leg Extension" },
+          { name: "Hip Adduction Machine", muscle: "Adductors", sets: 3, reps: "15", rest: "45s", restSec: 45, note: "Strânge picioarele înăuntru, controlează revenirea", svg: "adductors", equipImg: "Thigh_Adductor/0.jpg", equipName: "Adduction" },
+          { name: "Standing Calf Raises", muscle: "Calves (Gastrocnemius)", sets: 4, reps: "15-20", rest: "45s", restSec: 45, note: "Amplitudine completă, pauză sus", svg: "calves", equipImg: "Standing_Calf_Raises/0.jpg", equipName: "Calf Raise" },
+          { name: "Seated Calf Raise Machine", muscle: "Calves (Soleus)", sets: 3, reps: "20", rest: "45s", restSec: 45, note: "Repetări lente controlate, întindere completă jos", svg: "calves", equipImg: "Seated_Calf_Raise/0.jpg", equipName: "Calf Machine" },
+          { name: "Cable Crunches", muscle: "Abdominals", sets: 3, reps: "15-20", rest: "45s", restSec: 45, note: "Îngenunchiat, curbează coastele spre pelvis", svg: "abs", equipImg: "Cable_Crunch/0.jpg", equipName: "Cable Machine" },
+        ]
+      },
+      {
+        day: "Joi", name: "Shoulders, Traps & Abs", muscles: "Umeri, Trapez, Abdominali",
+        exercises: [
+          { name: "Machine Shoulder Press", muscle: "Front & Mid Delts", sets: 4, reps: "8-10", rest: "90s", restSec: 90, note: "Apasă complet sus, coboară controlat", svg: "shoulders", equipImg: "Leverage_Shoulder_Press/0.jpg", equipName: "Shoulder Press" },
+          { name: "Cable Lateral Raises", muscle: "Mid Delts", sets: 4, reps: "12-15", rest: "60s", restSec: 60, note: "Cablu jos, ridică la nivelul umerilor", svg: "shoulders", equipImg: "Standing_Low-Pulley_Deltoid_Raise/0.jpg", equipName: "Cable Machine" },
+          { name: "Reverse Pec Deck", muscle: "Rear Delts", sets: 3, reps: "15", rest: "60s", restSec: 60, note: "Strânge omoplații la final", svg: "shoulders", equipImg: "Reverse_Machine_Flyes/0.jpg", equipName: "Pec Deck" },
+          { name: "Cable Front Raise", muscle: "Front Delts", sets: 3, reps: "12", rest: "60s", restSec: 60, note: "Ridică până la nivelul ochilor, controlează revenirea", svg: "shoulders", equipImg: "Front_Cable_Raise/0.jpg", equipName: "Cable Machine" },
+          { name: "Smith Machine Shrugs", muscle: "Upper Traps", sets: 4, reps: "12-15", rest: "60s", restSec: 60, note: "Direct sus, strânge sus, fără rotire", svg: "traps", equipImg: "Smith_Machine_Behind_the_Back_Shrug/0.jpg", equipName: "Smith Machine" },
+          { name: "Machine Ab Crunch", muscle: "Abdominals", sets: 3, reps: "15-20", rest: "45s", restSec: 45, note: "Curbează coastele spre pelvis, nu trage cu brațele", svg: "abs", equipImg: "Ab_Crunch_Machine/0.jpg", equipName: "Ab Machine" },
+          { name: "Cable Pallof Press", muscle: "Core / Anti-Rotation", sets: 3, reps: "12 / parte", rest: "45s", restSec: 45, note: "Împinge mânerele drept, rezistă rotației", svg: "abs", equipImg: "Pallof_Press/0.jpg", equipName: "Cable Machine" },
+        ]
+      },
+      {
+        day: "Vineri", name: "Hamstrings, Lower Back & Abductors", muscles: "Ischiogambieri, Lombari, Abductori",
+        exercises: [
+          { name: "Smith Romanian Deadlift", muscle: "Hamstrings / Lower Back", sets: 4, reps: "10-12", rest: "90s", restSec: 90, note: "Împinge șoldurile înapoi, simte întinderea în ischiogambieri", svg: "hamstrings", equipImg: "Smith_Machine_Stiff-Legged_Deadlift/0.jpg", equipName: "Smith Machine" },
+          { name: "Lying Leg Curl Machine", muscle: "Hamstrings", sets: 4, reps: "10-12", rest: "75s", restSec: 75, note: "Eccentric lent, strânge sus", svg: "hamstrings", equipImg: "Lying_Leg_Curls/0.jpg", equipName: "Leg Curl" },
+          { name: "Seated Leg Curl Machine", muscle: "Hamstrings", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Menține contracția maximă 1 secundă", svg: "hamstrings", equipImg: "Seated_Leg_Curl/0.jpg", equipName: "Leg Curl" },
+          { name: "Back Extensions (Hyperextensions)", muscle: "Lower Back", sets: 4, reps: "12-15", rest: "60s", restSec: 60, note: "Ridică torsul controlat, nu hiperextinde lombarii", svg: "lowerback", equipImg: "Hyperextensions_(Back_Extensions)/0.jpg", equipName: "Hyperextension" },
+          { name: "Hip Abduction Machine", muscle: "Abductors", sets: 3, reps: "15", rest: "45s", restSec: 45, note: "Împinge genunchii în afară, controlează revenirea", svg: "abductors", equipImg: "Thigh_Abductor/0.jpg", equipName: "Abduction" },
+          { name: "Cable Pull-Through", muscle: "Hamstrings / Glutes", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Articulează din șolduri, strânge fesierii sus", svg: "hamstrings", equipImg: "Pull_Through/0.jpg", equipName: "Cable Machine" },
+          { name: "Good Morning (Smith)", muscle: "Lower Back", sets: 3, reps: "12", rest: "60s", restSec: 60, note: "Bara pe spate, înclină din șold cu spatele drept", svg: "lowerback", equipImg: "Good_Morning/0.jpg", equipName: "Smith Machine" },
+        ]
+      },
+    ]
+  },
+  /* ---------------------- WEEK 2 ---------------------- */
+  {
+    label: "Săptămâna 2",
+    days: [
+      {
+        day: "Luni", name: "Push (Chest, Shoulders, Triceps)", muscles: "Piept, Umeri, Triceps",
+        exercises: [
+          { name: "Incline Machine Press", muscle: "Upper Chest", sets: 4, reps: "8-10", rest: "90s", restSec: 90, note: "Concentrează-te pe pieptul superior", svg: "chest", equipImg: "Leverage_Incline_Chest_Press/0.jpg", equipName: "Incline Press" },
+          { name: "Machine Chest Press", muscle: "Chest", sets: 3, reps: "10-12", rest: "75s", restSec: 75, note: "Cap lateral, presează egal cu ambele brațe", svg: "chest", equipImg: "Leverage_Chest_Press/0.jpg", equipName: "Chest Press" },
+          { name: "Machine Shoulder Press", muscle: "Shoulders", sets: 4, reps: "8-10", rest: "90s", restSec: 90, note: "Apasă vertical, nu blochează coatele complet", svg: "shoulders", equipImg: "Leverage_Shoulder_Press/0.jpg", equipName: "Shoulder Press" },
+          { name: "Cable Lateral Raises", muscle: "Mid Delts", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Mișcare controlată, fără elan", svg: "shoulders", equipImg: "Standing_Low-Pulley_Deltoid_Raise/0.jpg", equipName: "Cable Machine" },
+          { name: "Cable Crossovers (Low to High)", muscle: "Upper Chest", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Scripeții jos, ridică mâinile sus și împreună", svg: "chest", equipImg: "Low_Cable_Crossover/0.jpg", equipName: "Cable Machine" },
+          { name: "Tricep Bar Pushdown", muscle: "Triceps", sets: 3, reps: "10-12", rest: "60s", restSec: 60, note: "Coatele fixe, blocare completă", svg: "triceps", equipImg: "Triceps_Pushdown/0.jpg", equipName: "Cable Machine" },
+          { name: "Cable Overhead Tricep Ext", muscle: "Triceps (Long Head)", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Întindere completă în spate", svg: "triceps", equipImg: "Cable_Rope_Overhead_Triceps_Extension/0.jpg", equipName: "Cable Machine" },
+        ]
+      },
+      {
+        day: "Marți", name: "Pull (Lats, Traps, Biceps, Forearms)", muscles: "Lats, Trapez, Biceps, Antebrațe",
+        exercises: [
+          { name: "Lat Pulldown (Close Grip)", muscle: "Lats", sets: 4, reps: "8-10", rest: "90s", restSec: 90, note: "Priză strânsă, trage la pieptul inferior", svg: "lats", equipImg: "V-Bar_Pulldown/0.jpg", equipName: "Lat Pulldown" },
+          { name: "Seated Cable Row (Wide)", muscle: "Mid Back / Lats", sets: 4, reps: "10-12", rest: "75s", restSec: 75, note: "Priză largă, strânge omoplații", svg: "lats", equipImg: "Seated_Cable_Rows/0.jpg", equipName: "Cable Row" },
+          { name: "Smith Machine Shrugs", muscle: "Upper Traps", sets: 4, reps: "12-15", rest: "60s", restSec: 60, note: "Ridicare verticală pură, pauză sus", svg: "traps", equipImg: "Smith_Machine_Behind_the_Back_Shrug/0.jpg", equipName: "Smith Machine" },
+          { name: "Cable Face Pulls", muscle: "Traps / Rear Delts", sets: 3, reps: "15", rest: "45s", restSec: 45, note: "Rotație externă sus, trage la frunte", svg: "traps", equipImg: "Face_Pull/0.jpg", equipName: "Cable Machine" },
+          { name: "Standing Biceps Cable Curl", muscle: "Biceps", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Tensiune constantă pe parcursul mișcării", svg: "biceps", equipImg: "Standing_Biceps_Cable_Curl/0.jpg", equipName: "Cable Machine" },
+          { name: "Machine Preacher Curl", muscle: "Biceps", sets: 3, reps: "12", rest: "60s", restSec: 60, note: "Pad-ul susține brațele, negativă lentă", svg: "biceps", equipImg: "Machine_Preacher_Curls/0.jpg", equipName: "Preacher Curl" },
+          { name: "Cable Wrist Curls", muscle: "Forearms", sets: 3, reps: "20", rest: "45s", restSec: 45, note: "Antebrațele sprijinite, doar încheietura lucrează", svg: "forearms", equipImg: "Cable_Wrist_Curl/0.jpg", equipName: "Cable Machine" },
+        ]
+      },
+      {
+        day: "Miercuri", name: "Lower Body (Quads, Hamstrings, Calves)", muscles: "Cvadricepși, Ischiogambieri, Gambe",
+        exercises: [
+          { name: "Leg Press", muscle: "Quads", sets: 4, reps: "10-12", rest: "120s", restSec: 120, note: "Coboară controlat, împinge cu forță", svg: "quads", equipImg: "Leg_Press/0.jpg", equipName: "Leg Press" },
+          { name: "Lying Leg Curl", muscle: "Hamstrings", sets: 4, reps: "10-12", rest: "75s", restSec: 75, note: "Strânge ischiogambierii sus", svg: "hamstrings", equipImg: "Lying_Leg_Curls/0.jpg", equipName: "Leg Curl" },
+          { name: "Hack Squat Machine", muscle: "Quads", sets: 3, reps: "10-12", rest: "90s", restSec: 90, note: "Coboară până la paralel sau mai jos", svg: "quads", equipImg: "Hack_Squat/0.jpg", equipName: "Hack Squat" },
+          { name: "Seated Leg Curl", muscle: "Hamstrings", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Strânge 1 secundă la final", svg: "hamstrings", equipImg: "Seated_Leg_Curl/0.jpg", equipName: "Leg Curl" },
+          { name: "Leg Extension", muscle: "Quads", sets: 3, reps: "12-15", rest: "60s", restSec: 60, note: "Strânge cvadricepșii la final", svg: "quads", equipImg: "Leg_Extensions/0.jpg", equipName: "Leg Extension" },
+          { name: "Standing Calf Raise", muscle: "Calves", sets: 4, reps: "15-20", rest: "45s", restSec: 45, note: "Amplitudine maximă, pauză sus", svg: "calves", equipImg: "Standing_Calf_Raises/0.jpg", equipName: "Calf Raise" },
+          { name: "Seated Calf Raise", muscle: "Calves (Soleus)", sets: 3, reps: "20", rest: "45s", restSec: 45, note: "Repetări lente cu întindere completă", svg: "calves", equipImg: "Seated_Calf_Raise/0.jpg", equipName: "Calf Machine" },
+        ]
+      },
+      {
+        day: "Joi", name: "Core, Lower Back & Hip", muscles: "Lombari, Abdomen, Abductori, Adductori",
+        exercises: [
+          { name: "Hyperextensions", muscle: "Lower Back", sets: 4, reps: "12-15", rest: "60s", restSec: 60, note: "Mișcare controlată, fără hiperextensie", svg: "lowerback", equipImg: "Hyperextensions_(Back_Extensions)/0.jpg", equipName: "Hyperextension" },
+          { name: "Hip Abduction Machine", muscle: "Abductors", sets: 4, reps: "15", rest: "45s", restSec: 45, note: "Apasă în afară controlat, fără elan", svg: "abductors", equipImg: "Thigh_Abductor/0.jpg", equipName: "Abduction" },
+          { name: "Hip Adduction Machine", muscle: "Adductors", sets: 4, reps: "15", rest: "45s", restSec: 45, note: "Strânge picioarele înăuntru, pauză 1 sec", svg: "adductors", equipImg: "Thigh_Adductor/0.jpg", equipName: "Adduction" },
+          { name: "Cable Crunches", muscle: "Abdominals", sets: 3, reps: "15-20", rest: "45s", restSec: 45, note: "Curbează coloana, nu folosi șoldurile", svg: "abs", equipImg: "Cable_Crunch/0.jpg", equipName: "Cable Machine" },
+          { name: "Cable Woodchops", muscle: "Obliques / Core", sets: 3, reps: "12 / parte", rest: "45s", restSec: 45, note: "Rotație din core, brațele rămân întinse", svg: "abs", equipImg: "Standing_Cable_Wood_Chop/0.jpg", equipName: "Cable Machine" },
+          { name: "Machine Ab Crunch", muscle: "Abdominals", sets: 3, reps: "15-20", rest: "45s", restSec: 45, note: "Curbează coastele spre pelvis", svg: "abs", equipImg: "Ab_Crunch_Machine/0.jpg", equipName: "Ab Machine" },
+          { name: "Good Morning (Smith)", muscle: "Lower Back", sets: 3, reps: "12", rest: "60s", restSec: 60, note: "Mișcare din șold, spatele drept", svg: "lowerback", equipImg: "Good_Morning/0.jpg", equipName: "Smith Machine" },
+        ]
+      },
+      {
+        day: "Vineri", name: "Arms & Shoulders Specialization", muscles: "Umeri, Biceps, Triceps, Antebrațe",
+        exercises: [
+          { name: "Cable Lateral Raises", muscle: "Mid Delts", sets: 4, reps: "12-15", rest: "60s", restSec: 60, note: "Mișcare lentă, vârf de contracție", svg: "shoulders", equipImg: "Standing_Low-Pulley_Deltoid_Raise/0.jpg", equipName: "Cable Machine" },
+          { name: "Cable Front Raise", muscle: "Front Delts", sets: 3, reps: "12", rest: "60s", restSec: 60, note: "Ridică la nivelul ochilor, controlează", svg: "shoulders", equipImg: "Front_Cable_Raise/0.jpg", equipName: "Cable Machine" },
+          { name: "Reverse Pec Deck", muscle: "Rear Delts", sets: 3, reps: "15", rest: "60s", restSec: 60, note: "Strânge omoplații la spate", svg: "shoulders", equipImg: "Reverse_Machine_Flyes/0.jpg", equipName: "Pec Deck" },
+          { name: "Machine Preacher Curl", muscle: "Biceps", sets: 4, reps: "10-12", rest: "60s", restSec: 60, note: "Negativă lentă (3 secunde)", svg: "biceps", equipImg: "Machine_Preacher_Curls/0.jpg", equipName: "Preacher Curl" },
+          { name: "Cable Hammer Curls", muscle: "Biceps / Brachialis", sets: 3, reps: "12", rest: "60s", restSec: 60, note: "Priză neutră pe coardă", svg: "biceps", equipImg: "Cable_Hammer_Curls_-_Rope_Attachment/0.jpg", equipName: "Cable Machine" },
+          { name: "Tricep Rope Pushdown", muscle: "Triceps", sets: 4, reps: "10-12", rest: "60s", restSec: 60, note: "Desfă coarda la final, strânge", svg: "triceps", equipImg: "Triceps_Pushdown_-_Rope_Attachment/0.jpg", equipName: "Cable Machine" },
+          { name: "Cable Wrist Curls", muscle: "Forearms", sets: 3, reps: "20", rest: "45s", restSec: 45, note: "Doar încheietura, antebrațul fix", svg: "forearms", equipImg: "Cable_Wrist_Curl/0.jpg", equipName: "Cable Machine" },
+        ]
+      },
+    ]
+  }
+];
+
+const warmupSVGs = {
+  jumpingJacks: `<svg viewBox="0 0 120 60"><line x1="0" y1="56" x2="120" y2="56" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="60" cy="8" r="5" fill="#ffb74d"/><line x1="60" y1="13" x2="60" y2="36" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="21" x2="38" y2="10" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="21" x2="82" y2="10" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="36" x2="42" y2="54" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="36" x2="78" y2="54" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><path d="M 34 13 Q 26 9 28 3" stroke="#e94560" stroke-width="1.5" fill="none" opacity="0.8"/><polygon points="28,3 25,8 31,7" fill="#e94560" opacity="0.8"/><path d="M 86 13 Q 94 9 92 3" stroke="#e94560" stroke-width="1.5" fill="none" opacity="0.8"/><polygon points="92,3 89,8 95,7" fill="#e94560" opacity="0.8"/></svg>`,
+  armCircles: `<svg viewBox="0 0 120 60"><line x1="0" y1="56" x2="120" y2="56" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="60" cy="10" r="5" fill="#ffb74d"/><line x1="60" y1="15" x2="60" y2="40" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="24" x2="30" y2="24" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="24" x2="90" y2="24" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="40" x2="52" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="40" x2="68" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><circle cx="30" cy="24" r="9" fill="none" stroke="#ffb74d" stroke-width="1.3" stroke-dasharray="3,2" opacity="0.6"/><polygon points="30,15 27,19 33,18" fill="#ffb74d" opacity="0.9"/><circle cx="90" cy="24" r="9" fill="none" stroke="#ffb74d" stroke-width="1.3" stroke-dasharray="3,2" opacity="0.6"/><polygon points="90,33 87,29 93,30" fill="#ffb74d" opacity="0.9"/></svg>`,
+  hipCircles: `<svg viewBox="0 0 120 60"><line x1="0" y1="56" x2="120" y2="56" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="60" cy="8" r="5" fill="#ffb74d"/><line x1="60" y1="13" x2="60" y2="32" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="20" x2="46" y2="28" stroke="#ffb74d" stroke-width="2.5" stroke-linecap="round"/><line x1="60" y1="20" x2="74" y2="28" stroke="#ffb74d" stroke-width="2.5" stroke-linecap="round"/><line x1="60" y1="32" x2="50" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="32" x2="70" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><ellipse cx="60" cy="33" rx="13" ry="5" fill="none" stroke="#e94560" stroke-width="1.8" stroke-dasharray="4,2" opacity="0.9"/><polygon points="60,28 57,31 63,31" fill="#e94560" opacity="0.9"/></svg>`,
+  legSwings: `<svg viewBox="0 0 120 60"><line x1="0" y1="56" x2="120" y2="56" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><rect x="12" y="4" width="5" height="52" fill="#2a2a4a" rx="2"/><circle cx="44" cy="10" r="5" fill="#ffb74d"/><line x1="44" y1="15" x2="44" y2="36" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="44" y1="22" x2="18" y2="22" stroke="#ffb74d" stroke-width="2.5" stroke-linecap="round"/><line x1="44" y1="22" x2="56" y2="28" stroke="#ffb74d" stroke-width="2.5" stroke-linecap="round"/><line x1="44" y1="36" x2="40" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="44" y1="36" x2="76" y2="28" stroke="#e94560" stroke-width="3.5" stroke-linecap="round"/><circle cx="76" cy="28" r="3" fill="#e94560" opacity="0.8"/><path d="M 42 52 Q 64 44 74 30" stroke="#e94560" stroke-width="1.5" fill="none" stroke-dasharray="3,2" opacity="0.6"/></svg>`,
+  torsoTwist: `<svg viewBox="0 0 120 60"><line x1="0" y1="56" x2="120" y2="56" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="60" cy="10" r="5" fill="#ffb74d"/><line x1="60" y1="15" x2="60" y2="38" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="56" y1="23" x2="28" y2="32" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="64" y1="23" x2="92" y2="14" stroke="#e94560" stroke-width="3" stroke-linecap="round"/><circle cx="28" cy="32" r="3" fill="#ffb74d"/><circle cx="92" cy="14" r="3" fill="#e94560"/><line x1="60" y1="38" x2="52" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="60" y1="38" x2="68" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><path d="M 50 18 Q 60 13 70 18" stroke="#e94560" stroke-width="1.5" fill="none"/><polygon points="70,18 67,15 69,21" fill="#e94560"/></svg>`,
+  squats: `<svg viewBox="0 0 120 60"><line x1="0" y1="56" x2="120" y2="56" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="58" cy="10" r="5" fill="#ffb74d"/><line x1="58" y1="15" x2="60" y2="30" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="59" y1="21" x2="36" y2="24" stroke="#ffb74d" stroke-width="2.5" stroke-linecap="round"/><line x1="59" y1="21" x2="82" y2="24" stroke="#ffb74d" stroke-width="2.5" stroke-linecap="round"/><line x1="60" y1="30" x2="36" y2="35" stroke="#ffb74d" stroke-width="3.5" stroke-linecap="round"/><line x1="60" y1="30" x2="84" y2="35" stroke="#ffb74d" stroke-width="3.5" stroke-linecap="round"/><line x1="36" y1="35" x2="30" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="84" y1="35" x2="90" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><path d="M 60 44 L 60 52" stroke="#e94560" stroke-width="1.5"/><polygon points="60,52 57,47 63,47" fill="#e94560" opacity="0.9"/></svg>`,
+  highKnees: `<svg viewBox="0 0 120 60"><line x1="0" y1="56" x2="120" y2="56" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="58" cy="8" r="5" fill="#ffb74d"/><line x1="58" y1="13" x2="58" y2="34" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="58" y1="20" x2="44" y2="28" stroke="#ffb74d" stroke-width="2.5" stroke-linecap="round"/><line x1="58" y1="20" x2="70" y2="16" stroke="#ffb74d" stroke-width="2.5" stroke-linecap="round"/><line x1="58" y1="34" x2="48" y2="55" stroke="#ffb74d" stroke-width="3" stroke-linecap="round"/><line x1="58" y1="34" x2="72" y2="20" stroke="#e94560" stroke-width="3.5" stroke-linecap="round"/><line x1="72" y1="20" x2="80" y2="34" stroke="#e94560" stroke-width="3" stroke-linecap="round"/><path d="M 62 30 Q 70 24 76 32" stroke="#e94560" stroke-width="1.5" fill="none" stroke-dasharray="2,2" opacity="0.7"/></svg>`
+};
+
+const muscleSVGs = {
+  chest: `<svg viewBox="0 0 80 80"><ellipse cx="40" cy="45" rx="30" ry="28" class="body-base"/><ellipse cx="40" cy="30" rx="12" ry="10" class="body-base"/><path d="M18 38 Q20 28 30 26 Q36 25 40 30 Q44 25 50 26 Q60 28 62 38 Q62 50 52 52 Q44 54 40 48 Q36 54 28 52 Q18 50 18 38Z" class="muscle-highlight"/><line x1="40" y1="30" x2="40" y2="48" stroke="#0f0f1a" stroke-width="1.5"/><text x="40" y="72" text-anchor="middle" fill="#e94560" font-size="8" font-weight="bold">CHEST</text></svg>`,
+  triceps: `<svg viewBox="0 0 80 80"><ellipse cx="40" cy="30" rx="12" ry="10" class="body-base"/><rect x="30" y="36" width="20" height="16" rx="4" class="body-base"/><path d="M12 32 Q10 30 11 26 L14 18 Q16 14 18 18 L20 28 Q21 34 18 36 L14 37 Q11 37 12 32Z" class="muscle-highlight"/><path d="M68 32 Q70 30 69 26 L66 18 Q64 14 62 18 L60 28 Q59 34 62 36 L66 37 Q69 37 68 32Z" class="muscle-highlight"/><line x1="14" y1="37" x2="10" y2="55" stroke="#3a3a5a" stroke-width="3" stroke-linecap="round"/><line x1="66" y1="37" x2="70" y2="55" stroke="#3a3a5a" stroke-width="3" stroke-linecap="round"/><text x="40" y="72" text-anchor="middle" fill="#e94560" font-size="8" font-weight="bold">TRICEPS</text></svg>`,
+  lats: `<svg viewBox="0 0 80 80"><ellipse cx="40" cy="28" rx="12" ry="10" class="body-base"/><rect x="30" y="34" width="20" height="22" rx="3" class="body-base"/><path d="M20 34 Q22 30 28 32 L30 34 L30 52 Q28 56 22 54 Q16 50 16 42 Q16 36 20 34Z" class="muscle-highlight"/><path d="M60 34 Q58 30 52 32 L50 34 L50 52 Q52 56 58 54 Q64 50 64 42 Q64 36 60 34Z" class="muscle-highlight"/><text x="40" y="72" text-anchor="middle" fill="#e94560" font-size="8" font-weight="bold">LATS</text></svg>`,
+  biceps: `<svg viewBox="0 0 80 80"><ellipse cx="40" cy="30" rx="12" ry="10" class="body-base"/><rect x="30" y="36" width="20" height="16" rx="4" class="body-base"/><path d="M14 26 Q18 22 20 26 L22 34 Q23 40 20 42 L16 42 Q12 40 12 34 Z" class="muscle-highlight"/><path d="M66 26 Q62 22 60 26 L58 34 Q57 40 60 42 L64 42 Q68 40 68 34 Z" class="muscle-highlight"/><line x1="16" y1="42" x2="12" y2="58" stroke="#3a3a5a" stroke-width="3" stroke-linecap="round"/><line x1="64" y1="42" x2="68" y2="58" stroke="#3a3a5a" stroke-width="3" stroke-linecap="round"/><text x="40" y="72" text-anchor="middle" fill="#e94560" font-size="8" font-weight="bold">BICEPS</text></svg>`,
+  quads: `<svg viewBox="0 0 80 80"><rect x="30" y="4" width="20" height="14" rx="6" class="body-base"/><path d="M20 18 Q20 14 26 14 L34 14 L34 58 Q34 62 28 62 L24 62 Q18 62 18 56 Z" class="muscle-highlight"/><path d="M60 18 Q60 14 54 14 L46 14 L46 58 Q46 62 52 62 L56 62 Q62 62 62 56 Z" class="muscle-highlight"/><text x="40" y="74" text-anchor="middle" fill="#e94560" font-size="8" font-weight="bold">QUADS</text></svg>`,
+  hamstrings: `<svg viewBox="0 0 80 80"><rect x="30" y="4" width="20" height="14" rx="6" class="body-base"/><path d="M20 18 Q20 14 26 14 L34 14 L34 58 Q34 62 28 62 L24 62 Q18 62 18 56 Z" class="muscle-highlight" opacity="0.4"/><path d="M60 18 Q60 14 54 14 L46 14 L46 58 Q46 62 52 62 L56 62 Q62 62 62 56 Z" class="muscle-highlight" opacity="0.4"/><path d="M22 20 L32 20 L32 54 Q32 58 28 58 L22 58 Q20 56 20 52 Z" class="muscle-highlight"/><path d="M58 20 L48 20 L48 54 Q48 58 52 58 L58 58 Q60 56 60 52 Z" class="muscle-highlight"/><text x="40" y="74" text-anchor="middle" fill="#e94560" font-size="7" font-weight="bold">HAMSTRINGS</text></svg>`,
+  calves: `<svg viewBox="0 0 80 80"><line x1="30" y1="4" x2="30" y2="20" stroke="#3a3a5a" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="4" x2="50" y2="20" stroke="#3a3a5a" stroke-width="4" stroke-linecap="round"/><path d="M22 20 Q22 16 26 18 L34 20 L34 52 Q34 58 30 60 L26 60 Q20 58 18 52 Z" class="muscle-highlight"/><path d="M58 20 Q58 16 54 18 L46 20 L46 52 Q46 58 50 60 L54 60 Q60 58 62 52 Z" class="muscle-highlight"/><line x1="28" y1="60" x2="28" y2="70" stroke="#3a3a5a" stroke-width="2.5" stroke-linecap="round"/><line x1="52" y1="60" x2="52" y2="70" stroke="#3a3a5a" stroke-width="2.5" stroke-linecap="round"/><text x="40" y="78" text-anchor="middle" fill="#e94560" font-size="8" font-weight="bold">CALVES</text></svg>`,
+  shoulders: `<svg viewBox="0 0 80 80"><ellipse cx="40" cy="34" rx="12" ry="10" class="body-base"/><rect x="30" y="40" width="20" height="16" rx="3" class="body-base"/><path d="M14 30 Q16 20 24 22 Q30 24 30 30 Q30 38 24 40 Q16 42 14 36 Z" class="muscle-highlight"/><path d="M66 30 Q64 20 56 22 Q50 24 50 30 Q50 38 56 40 Q64 42 66 36 Z" class="muscle-highlight"/><path d="M30 28 Q34 24 40 24 Q46 24 50 28 L50 34 Q46 30 40 30 Q34 30 30 34 Z" class="muscle-highlight" opacity="0.6"/><text x="40" y="72" text-anchor="middle" fill="#e94560" font-size="7" font-weight="bold">SHOULDERS</text></svg>`,
+  traps: `<svg viewBox="0 0 80 80"><ellipse cx="40" cy="24" rx="10" ry="9" class="body-base"/><path d="M24 28 Q28 20 40 18 Q52 20 56 28 L62 42 Q56 38 40 36 Q24 38 18 42 Z" class="muscle-highlight"/><rect x="28" y="36" width="24" height="20" rx="4" class="body-base"/><text x="40" y="72" text-anchor="middle" fill="#e94560" font-size="8" font-weight="bold">TRAPS</text></svg>`,
+  abs: `<svg viewBox="0 0 80 80"><rect x="28" y="8" width="24" height="56" rx="6" class="muscle-highlight"/><line x1="40" y1="10" x2="40" y2="62" stroke="#0f0f1a" stroke-width="1.5"/><line x1="30" y1="20" x2="50" y2="20" stroke="#0f0f1a" stroke-width="1"/><line x1="30" y1="30" x2="50" y2="30" stroke="#0f0f1a" stroke-width="1"/><line x1="30" y1="40" x2="50" y2="40" stroke="#0f0f1a" stroke-width="1"/><line x1="30" y1="50" x2="50" y2="50" stroke="#0f0f1a" stroke-width="1"/><text x="40" y="76" text-anchor="middle" fill="#e94560" font-size="8" font-weight="bold">ABS</text></svg>`,
+  forearms: `<svg viewBox="0 0 80 80"><line x1="26" y1="4" x2="26" y2="18" stroke="#3a3a5a" stroke-width="5" stroke-linecap="round"/><line x1="54" y1="4" x2="54" y2="18" stroke="#3a3a5a" stroke-width="5" stroke-linecap="round"/><path d="M18 18 Q18 14 22 16 L30 18 L30 52 Q30 56 26 58 Q20 58 18 52 Z" class="muscle-highlight"/><path d="M62 18 Q62 14 58 16 L50 18 L50 52 Q50 56 54 58 Q60 58 62 52 Z" class="muscle-highlight"/><circle cx="26" cy="62" r="4" class="body-base"/><circle cx="54" cy="62" r="4" class="body-base"/><text x="40" y="76" text-anchor="middle" fill="#e94560" font-size="7" font-weight="bold">FOREARMS</text></svg>`,
+  lowerback: `<svg viewBox="0 0 80 80"><ellipse cx="40" cy="14" rx="10" ry="6" class="body-base"/><rect x="26" y="20" width="28" height="18" rx="3" class="body-base"/><path d="M24 38 Q26 34 32 34 L48 34 Q54 34 56 38 L56 60 Q54 64 48 64 L32 64 Q26 64 24 60 Z" class="muscle-highlight"/><line x1="40" y1="34" x2="40" y2="64" stroke="#0f0f1a" stroke-width="1.5"/><line x1="32" y1="42" x2="48" y2="42" stroke="#0f0f1a" stroke-width="0.6" opacity="0.5"/><line x1="32" y1="50" x2="48" y2="50" stroke="#0f0f1a" stroke-width="0.6" opacity="0.5"/><line x1="32" y1="58" x2="48" y2="58" stroke="#0f0f1a" stroke-width="0.6" opacity="0.5"/><text x="40" y="76" text-anchor="middle" fill="#e94560" font-size="7" font-weight="bold">LOWER BACK</text></svg>`,
+  abductors: `<svg viewBox="0 0 80 80"><rect x="28" y="8" width="24" height="14" rx="4" class="body-base"/><path d="M18 22 Q16 18 22 18 L30 20 L30 56 Q28 60 22 58 Q14 54 14 40 Q14 28 18 22 Z" class="muscle-highlight"/><path d="M62 22 Q64 18 58 18 L50 20 L50 56 Q52 60 58 58 Q66 54 66 40 Q66 28 62 22 Z" class="muscle-highlight"/><path d="M34 22 L46 22 L46 60 L34 60 Z" class="body-base"/><text x="40" y="74" text-anchor="middle" fill="#e94560" font-size="7" font-weight="bold">ABDUCTORS</text></svg>`,
+  adductors: `<svg viewBox="0 0 80 80"><rect x="28" y="8" width="24" height="14" rx="4" class="body-base"/><path d="M16 22 L26 22 L26 60 L18 60 Q14 56 14 50 Z" class="body-base"/><path d="M64 22 L54 22 L54 60 L62 60 Q66 56 66 50 Z" class="body-base"/><path d="M30 22 Q32 18 38 20 L40 22 L40 58 Q38 62 32 60 Q26 56 26 44 Q26 30 30 22 Z" class="muscle-highlight"/><path d="M50 22 Q48 18 42 20 L40 22 L40 58 Q42 62 48 60 Q54 56 54 44 Q54 30 50 22 Z" class="muscle-highlight"/><text x="40" y="74" text-anchor="middle" fill="#e94560" font-size="7" font-weight="bold">ADDUCTORS</text></svg>`
+};
+
+/* ============================================================
+   DAILY SPINE & SCIATIC RECOVERY ROUTINE
+   Pentru ameliorarea nervului sciatic și susținerea L1-L5
+   Se face la finalul fiecărei sesiuni (~8-10 minute)
+   ============================================================ */
+const spineSVGs = {
+  pelvicTilt: `<svg viewBox="0 0 120 60"><line x1="0" y1="52" x2="120" y2="52" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="20" cy="42" r="5" fill="#4fc3f7"/><line x1="25" y1="42" x2="58" y2="42" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><circle cx="58" cy="42" r="4" fill="#e94560"/><line x1="58" y1="42" x2="78" y2="26" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="78" y1="26" x2="84" y2="50" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="84" y1="50" x2="92" y2="50" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round"/><path d="M 40 38 Q 55 30 60 36" stroke="#e94560" stroke-width="1.5" fill="none" opacity="0.8"/><polygon points="60,36 56,33 60,40" fill="#e94560"/></svg>`,
+  catCow: `<svg viewBox="0 0 120 60"><line x1="0" y1="52" x2="120" y2="52" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="25" cy="22" r="5" fill="#4fc3f7"/><path d="M 28 24 Q 50 32 75 22" stroke="#4fc3f7" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M 35 28 Q 50 32 65 26" stroke="#e94560" stroke-width="2" fill="none" opacity="0.9"/><line x1="28" y1="24" x2="32" y2="50" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="75" y1="22" x2="78" y2="50" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><path d="M 100 25 Q 105 35 100 45" stroke="#e94560" stroke-width="1.5" fill="none" opacity="0.7"/><polygon points="100,45 97,42 103,42" fill="#e94560"/></svg>`,
+  birdDog: `<svg viewBox="0 0 120 60"><line x1="0" y1="52" x2="120" y2="52" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="30" cy="28" r="5" fill="#4fc3f7"/><line x1="33" y1="29" x2="78" y2="29" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="33" y1="29" x2="10" y2="22" stroke="#e94560" stroke-width="3.5" stroke-linecap="round"/><circle cx="10" cy="22" r="2.5" fill="#e94560"/><line x1="33" y1="29" x2="33" y2="50" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round" opacity="0.6"/><line x1="78" y1="29" x2="78" y2="50" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round" opacity="0.6"/><line x1="78" y1="29" x2="110" y2="22" stroke="#e94560" stroke-width="3.5" stroke-linecap="round"/><circle cx="110" cy="22" r="2.5" fill="#e94560"/></svg>`,
+  glute: `<svg viewBox="0 0 120 60"><line x1="0" y1="52" x2="120" y2="52" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="20" cy="45" r="5" fill="#4fc3f7"/><line x1="25" y1="45" x2="55" y2="30" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><circle cx="58" cy="28" r="5" fill="#e94560"/><line x1="58" y1="28" x2="78" y2="48" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="76" y1="50" x2="88" y2="50" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round"/><path d="M 60 20 L 60 14" stroke="#e94560" stroke-width="1.5"/><polygon points="60,14 57,17 63,17" fill="#e94560"/></svg>`,
+  kneeChest: `<svg viewBox="0 0 120 60"><line x1="0" y1="52" x2="120" y2="52" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="18" cy="42" r="5" fill="#4fc3f7"/><line x1="23" y1="42" x2="55" y2="42" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="55" y1="42" x2="42" y2="22" stroke="#e94560" stroke-width="4" stroke-linecap="round"/><line x1="42" y1="22" x2="58" y2="32" stroke="#e94560" stroke-width="4" stroke-linecap="round"/><line x1="55" y1="44" x2="92" y2="44" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="35" y1="42" x2="45" y2="26" stroke="#4fc3f7" stroke-width="2.5" stroke-linecap="round"/><line x1="48" y1="42" x2="50" y2="24" stroke="#4fc3f7" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  piriformis: `<svg viewBox="0 0 120 60"><line x1="0" y1="52" x2="120" y2="52" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="15" cy="42" r="5" fill="#4fc3f7"/><line x1="20" y1="42" x2="50" y2="42" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="42" x2="55" y2="26" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="55" y1="26" x2="70" y2="40" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="42" x2="62" y2="32" stroke="#e94560" stroke-width="4" stroke-linecap="round"/><line x1="62" y1="32" x2="82" y2="22" stroke="#e94560" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="32" r="3" fill="#e94560" opacity="0.6"/></svg>`,
+  sciaticGlide: `<svg viewBox="0 0 120 60"><line x1="0" y1="52" x2="120" y2="52" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><line x1="14" y1="38" x2="40" y2="38" stroke="#3a3a5a" stroke-width="2"/><line x1="14" y1="38" x2="14" y2="52" stroke="#3a3a5a" stroke-width="2"/><line x1="40" y1="38" x2="40" y2="52" stroke="#3a3a5a" stroke-width="2"/><circle cx="25" cy="20" r="5" fill="#4fc3f7"/><line x1="25" y1="25" x2="28" y2="38" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="28" y1="38" x2="55" y2="38" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="55" y1="38" x2="95" y2="38" stroke="#e94560" stroke-width="4" stroke-linecap="round"/><line x1="95" y1="38" x2="95" y2="28" stroke="#e94560" stroke-width="3" stroke-linecap="round"/><path d="M 70 30 L 90 30" stroke="#e94560" stroke-width="1" stroke-dasharray="2,2" opacity="0.8"/></svg>`,
+  cobra: `<svg viewBox="0 0 120 60"><line x1="0" y1="52" x2="120" y2="52" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="20" cy="20" r="5" fill="#4fc3f7"/><path d="M 22 24 Q 40 22 60 32 L 95 48" stroke="#4fc3f7" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M 45 28 Q 55 32 68 40" stroke="#e94560" stroke-width="2.5" fill="none"/><line x1="24" y1="24" x2="28" y2="48" stroke="#4fc3f7" stroke-width="3.5" stroke-linecap="round"/><line x1="95" y1="48" x2="108" y2="48" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round"/><path d="M 18 14 L 14 10" stroke="#4fc3f7" stroke-width="1.5"/><polygon points="14,10 17,12 14,15" fill="#4fc3f7"/></svg>`,
+  child: `<svg viewBox="0 0 120 60"><line x1="0" y1="52" x2="120" y2="52" stroke="#3a3a5a" stroke-width="1" stroke-dasharray="3,3"/><circle cx="32" cy="42" r="5" fill="#4fc3f7"/><line x1="32" y1="42" x2="8" y2="48" stroke="#e94560" stroke-width="3.5" stroke-linecap="round"/><path d="M 37 40 Q 55 30 72 44" stroke="#4fc3f7" stroke-width="4" fill="none" stroke-linecap="round"/><line x1="72" y1="44" x2="82" y2="50" stroke="#4fc3f7" stroke-width="4" stroke-linecap="round"/><line x1="82" y1="50" x2="98" y2="50" stroke="#4fc3f7" stroke-width="3" stroke-linecap="round"/><path d="M 50 32 Q 55 28 60 32" stroke="#e94560" stroke-width="1.5" fill="none" opacity="0.7"/></svg>`
+};
+
+const spineRecovery = [
+  {
+    name: "Pelvic Tilts (Înclinări pelvine)",
+    target: "Multifidus / Transverse Abdominis",
+    dose: "2 x 10 repetări",
+    svg: "pelvicTilt",
+    note: "Întins pe spate, genunchii îndoiți. Presează lombarii ușor în podea, contractă abdomenul. Susține 3 secunde. Activează musculatura profundă care stabilizează L4-L5."
+  },
+  {
+    name: "Cat-Cow (Pisica-Vaca)",
+    target: "Mobilitate coloană L1-L5",
+    dose: "2 x 10 repetări",
+    svg: "catCow",
+    note: "În patrupedie: inspiră și arcuiește spatele jos (vacă), expiră și rotunjește spatele (pisică). Mișcare lentă și controlată. Lubrifiază discurile intervertebrale."
+  },
+  {
+    name: "Bird Dog",
+    target: "Erector spinae / Core stabilizator",
+    dose: "2 x 10 / parte",
+    svg: "birdDog",
+    note: "În patrupedie, extinde brațul drept înainte și piciorul stâng înapoi. Menține 3 secunde. Coloana neutră, fără bascule. Crucial pentru stabilitatea L1-L5."
+  },
+  {
+    name: "Glute Bridge (Pod)",
+    target: "Fesieri / Lombari",
+    dose: "2 x 15 repetări",
+    svg: "glute",
+    note: "Întins pe spate, ridică șoldurile contractând fesierii. Susține 2 secunde sus. Fesierii puternici descarcă presiunea de pe lombari și nervul sciatic."
+  },
+  {
+    name: "Knee-to-Chest Stretch",
+    target: "Decompresie lombară",
+    dose: "30s / parte (2 x)",
+    svg: "kneeChest",
+    note: "Întins pe spate, trage un genunchi spre piept, susține 30 secunde. Schimbă piciorul. Apoi ambii genunchi simultan. Eliberează presiunea pe rădăcinile nervoase."
+  },
+  {
+    name: "Piriformis Stretch",
+    target: "Mușchi piriform / Nerv sciatic",
+    dose: "30s / parte (2 x)",
+    svg: "piriformis",
+    note: "Întins pe spate, pune glezna dreaptă pe genunchiul stâng (formă de 4). Trage coapsa stângă spre piept. Mușchiul piriform comprimă nervul sciatic — această întindere este esențială."
+  },
+  {
+    name: "Sciatic Nerve Glide (Glisare nerv sciatic)",
+    target: "Mobilizare nerv sciatic",
+    dose: "2 x 10 / parte",
+    svg: "sciaticGlide",
+    note: "Pe scaun, întinde piciorul drept înainte cu vârful flexat, în timp ce flexezi gâtul înainte. Apoi îndoaie genunchiul și extinde gâtul. Mișcare blândă — flossing pentru nerv."
+  },
+  {
+    name: "Cobra / McKenzie Press-Up",
+    target: "Decompresie discuri lombare",
+    dose: "2 x 10 repetări",
+    svg: "cobra",
+    note: "Întins pe burtă, sprijină-te pe palme și ridică ușor pieptul, șoldurile rămân pe sol. Extinde coloana lombară. Re-poziționează discurile, eficient pentru sciatică."
+  },
+  {
+    name: "Child's Pose (Poziția copilului)",
+    target: "Relaxare lombari",
+    dose: "30-60 secunde",
+    svg: "child",
+    note: "Așază-te pe călcâie, întinde brațele înainte și apleacă pieptul spre genunchi. Respirație profundă. Finalizează sesiunea cu această decompresie pasivă."
+  }
+];
+
+const warmupExercises = [
+  {
+    name: "Jumping Jacks",
+    target: "Activare generală / Circulație",
+    dose: "2 minute",
+    svg: "jumpingJacks",
+    note: "Sari cu brațele sus și picioarele deschise simultan, apoi revino. Menține ritmul constant. Crește temperatura corpului și activează sistemul cardiovascular."
+  },
+  {
+    name: "Cercuri de brațe",
+    target: "Mobilitate umeri / Articulații",
+    dose: "30s înainte + 30s înapoi",
+    svg: "armCircles",
+    note: "Brațele întinse lateral, rotații ample forward și backward. Lubrifiază articulațiile umerilor. Esențial înainte de exerciții de presă sau tracțiuni."
+  },
+  {
+    name: "Cercuri de șolduri",
+    target: "Mobilitate șolduri / Lombari",
+    dose: "10 reps / parte",
+    svg: "hipCircles",
+    note: "Picioarele la lățimea umerilor, mâinile pe șolduri. Descrie cercuri ample. Reduce rigiditatea lombară și pregătește articulația coxofemurală pentru exerciții de picioare."
+  },
+  {
+    name: "Pendulări de picioare",
+    target: "Ischiogambieri / Flexori șold",
+    dose: "10 reps / picior",
+    svg: "legSwings",
+    note: "Ținându-te de un perete, balansează piciorul înainte și înapoi în mișcare controlată. Dinamizează tendoanele și pregătește mușchii posteriori ai coapsei."
+  },
+  {
+    name: "Răsuciri de trunchi",
+    target: "Rotatori coloană / Oblici",
+    dose: "20 reps (10 / parte)",
+    svg: "torsoTwist",
+    note: "Picioarele la lățimea umerilor, brațele întinse. Rotează torsul stânga-dreapta fără a mișca șoldurile. Mobilizează coloana toracică și activează oblicii."
+  },
+  {
+    name: "Genuflexiuni libere",
+    target: "Cvadricepși / Fesieri / Gambe",
+    dose: "15 reps",
+    svg: "squats",
+    note: "Picioarele la lățimea umerilor, coboară controlat până la paralel. Activează musculatura integrală a picioarelor și crește fluxul sanguin spre zona inferioară."
+  },
+  {
+    name: "High Knees (Genunchi sus)",
+    target: "Flexori șold / Core / Cardio",
+    dose: "30 secunde",
+    svg: "highKnees",
+    note: "Aleargă pe loc ridicând genunchii la nivelul șoldurilor. Menține abdomenul contractat și spatele drept. Finalizează încălzirea cu activare cardio intensă."
+  }
+];
+
+const EQUIP_BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
+const STORAGE_KEY = 'gymProgress2W';
+const WEIGHTS_KEY = 'gymWeights2W';
+
+const WEIGHT_OPTIONS = [];
+for (let kg = 5; kg <= 50; kg += 5) WEIGHT_OPTIONS.push(kg);
+
+function getWeights() {
+  return JSON.parse(localStorage.getItem(WEIGHTS_KEY) || '{}');
+}
+function saveWeights(w) {
+  localStorage.setItem(WEIGHTS_KEY, JSON.stringify(w));
+}
+function setWeight(key, value) {
+  const w = getWeights();
+  if (value === '' || value === null) {
+    delete w[key];
+  } else {
+    w[key] = value;
+  }
+  saveWeights(w);
+}
+
+function buildWeightSelect(key, current) {
+  let opts = `<option value="">—</option>`;
+  WEIGHT_OPTIONS.forEach(v => {
+    const sel = (String(current) === String(v)) ? ' selected' : '';
+    opts += `<option value="${v}"${sel}>${v} kg</option>`;
+  });
+  return `<select class="weight-select" data-key="${key}" onchange="setWeight(this.dataset.key, this.value)">${opts}</select>`;
+}
+
+let activeWeek = parseInt(localStorage.getItem('activeWeek') || '0', 10);
+if (![0,1].includes(activeWeek)) activeWeek = 0;
+
+function getProgress() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+}
+function saveProgress(p) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+}
+
+function render() {
+  const tabs = document.getElementById('tabs');
+  const content = document.getElementById('content');
+  tabs.innerHTML = '';
+  content.innerHTML = '';
+
+  const week = weeks[activeWeek];
+  const progress = getProgress();
+  const weights = getWeights();
+
+  week.days.forEach((day, di) => {
+    const tab = document.createElement('div');
+    tab.className = 'tab' + (di === 0 ? ' active' : '');
+    tab.innerHTML = `<span class="day-label">${day.day}</span>${day.name.split(' & ')[0].split(' (')[0]}`;
+    tab.onclick = () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.day-content').forEach(d => d.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('day-' + di).classList.add('active');
+    };
+    tabs.appendChild(tab);
+
+    const section = document.createElement('div');
+    section.className = 'day-content' + (di === 0 ? ' active' : '');
+    section.id = 'day-' + di;
+
+    let html = `<div class="day-header">
+      <h2>${day.day} — ${day.name}</h2>
+      <div class="muscles-targeted">${day.muscles}</div>
+      <div class="duration">⏱ Durată: ~1 oră</div>
+    </div>`;
+
+    // ----- Warm-up (în fiecare zi, înainte de antrenament) -----
+    html += `<div class="warmup-section">
+      <h3>🔥 Încălzire Corporală</h3>
+      <div class="warmup-subtitle">Rutină zilnică (~5-8 min) înainte de antrenament — activează musculatura, crește temperatura corpului și previne accidentările</div>`;
+    warmupExercises.forEach((wu, wi) => {
+      const wuKey = `w${activeWeek}d${di}wu${wi}`;
+      const wuDone = progress[wuKey] ? ' done' : '';
+      html += `<div class="warmup-card">
+        <div class="warmup-head">
+          <div class="warmup-img">${warmupSVGs[wu.svg] || ''}</div>
+          <div style="flex:1;min-width:140px">
+            <div class="warmup-target">${wu.target}</div>
+            <h4>${wu.name}</h4>
+          </div>
+          <button class="warmup-check${wuDone}" data-key="${wuKey}" onclick="toggleSet(this)">${wuDone ? '&#10003;' : '✓'}</button>
+        </div>
+        <p>${wu.note}</p>
+        <span class="warmup-dose">${wu.dose}</span>
+      </div>`;
+    });
+    html += `</div>`;
+
+    day.exercises.forEach((ex, ei) => {
+      const key = `w${activeWeek}d${di}e${ei}`;
+      html += `<div class="exercise-card">
+        <div class="exercise-top">
+          <div class="muscle-img">${muscleSVGs[ex.svg] || ''}</div>
+          <div class="exercise-info">
+            <div class="muscle-name">${ex.muscle}</div>
+            <h3>${ex.name}</h3>
+            <div class="sets-reps">
+              <span class="badge sets">${ex.sets} Seturi</span>
+              <span class="badge reps">${ex.reps} Reps</span>
+              <span class="badge rest">Pauză ${ex.rest}</span>
+            </div>
+          </div>
+          <div class="equip-img" title="${ex.equipName||''}"><img src="${EQUIP_BASE}${ex.equipImg}" alt="${ex.equipName||''}" loading="lazy" onerror="this.style.display='none'"/><div class="equip-label">${ex.equipName||''}</div></div>
+        </div>
+        <div class="exercise-note">${ex.note}</div>
+        <div class="weight-row">
+          <div class="weight-box start">
+            <span class="weight-label">🚀 Start (kg)</span>
+            ${buildWeightSelect(`start_${key}`, weights[`start_${key}`])}
+          </div>
+          <div class="weight-box last">
+            <span class="weight-label">🏁 Ultima serie (kg)</span>
+            ${buildWeightSelect(`last_${key}`, weights[`last_${key}`])}
+          </div>
+        </div>
+        <div class="progress-row">`;
+      for (let s = 1; s <= ex.sets; s++) {
+        const setKey = `${key}s${s}`;
+        const done = progress[setKey] ? ' done' : '';
+        html += `<button class="set-check${done}" data-key="${setKey}" onclick="toggleSet(this)">${done ? '&#10003;' : s}</button>`;
+      }
+      html += `<button class="rest-btn" onclick="startRest(${ex.restSec}, '${ex.name.replace(/'/g, "\\'")}')">&#9201; Pornire pauză ${ex.rest}</button>`;
+      html += `</div></div>`;
+    });
+
+    // ----- Spine & Sciatic Recovery (in fiecare zi) -----
+    html += `<div class="spine-section">
+      <h3>🧘 Recuperare Coloană & Nerv Sciatic</h3>
+      <div class="spine-subtitle">Rutină zilnică (~8-10 min) la finalul antrenamentului — pentru susținerea L1-L5 și ameliorarea sciaticii</div>`;
+    spineRecovery.forEach((sp, si) => {
+      const spKey = `w${activeWeek}d${di}sp${si}`;
+      const spDone = progress[spKey] ? ' done' : '';
+      html += `<div class="spine-card">
+        <div class="spine-head">
+          <div class="spine-img">${spineSVGs[sp.svg] || ''}</div>
+          <div style="flex:1;min-width:140px">
+            <div class="spine-target">${sp.target}</div>
+            <h4>${sp.name}</h4>
+          </div>
+          <button class="spine-check${spDone}" data-key="${spKey}" onclick="toggleSet(this)">${spDone ? '&#10003;' : '✓'}</button>
+        </div>
+        <p>${sp.note}</p>
+        <span class="spine-dose">${sp.dose}</span>
+      </div>`;
+    });
+    html += `</div>`;
+
+    section.innerHTML = html;
+    content.appendChild(section);
+  });
+
+  updateProgress();
+}
+
+function getTotalSets() {
+  let total = 0;
+  weeks[activeWeek].days.forEach(day => {
+    day.exercises.forEach(ex => total += ex.sets);
+    total += spineRecovery.length; // include exercițiile de recuperare zilnice
+    total += warmupExercises.length; // include exercițiile de încălzire zilnice
+  });
+  return total;
+}
+
+function getDoneSets() {
+  const progress = getProgress();
+  const prefix = `w${activeWeek}`;
+  return Object.keys(progress).filter(k => k.startsWith(prefix)).length;
+}
+
+function updateProgress() {
+  const done = getDoneSets();
+  const total = getTotalSets();
+  document.getElementById('doneCount').textContent = done;
+  document.getElementById('totalCount').textContent = total;
+  document.getElementById('progressBar').style.width = (total ? (done / total * 100) : 0) + '%';
+}
+
+function toggleSet(btn) {
+  const key = btn.dataset.key;
+  const progress = getProgress();
+  if (progress[key]) {
+    delete progress[key];
+    btn.classList.remove('done');
+    btn.innerHTML = key.split('s').pop();
+  } else {
+    progress[key] = true;
+    btn.classList.add('done');
+    btn.innerHTML = '&#10003;';
+  }
+  saveProgress(progress);
+  updateProgress();
+}
+
+/* -------------- WEEK SWITCH -------------- */
+document.getElementById('week1Btn').onclick = () => switchWeek(0);
+document.getElementById('week2Btn').onclick = () => switchWeek(1);
+
+function switchWeek(i) {
+  activeWeek = i;
+  localStorage.setItem('activeWeek', i);
+  document.getElementById('week1Btn').classList.toggle('active', i === 0);
+  document.getElementById('week2Btn').classList.toggle('active', i === 1);
+  render();
+}
+
+/* -------------- RESET BUTTON -------------- */
+const confirmOverlay = document.getElementById('confirmOverlay');
+document.getElementById('resetBtn').onclick = () => confirmOverlay.classList.add('active');
+document.getElementById('confirmCancel').onclick = () => confirmOverlay.classList.remove('active');
+document.getElementById('confirmYes').onclick = () => {
+  localStorage.removeItem(STORAGE_KEY);
+  confirmOverlay.classList.remove('active');
+  render();
+};
+
+/* -------------- REST TIMER -------------- */
+let timerInterval = null;
+let timerSecondsLeft = 0;
+const timerOverlay = document.getElementById('timerOverlay');
+const timerDisplay = document.getElementById('timerDisplay');
+const timerExercise = document.getElementById('timerExercise');
+
+function formatTime(s) {
+  const m = Math.floor(s / 60).toString().padStart(2, '0');
+  const sec = (s % 60).toString().padStart(2, '0');
+  return `${m}:${sec}`;
+}
+
+function updateTimerDisplay() {
+  timerDisplay.textContent = formatTime(timerSecondsLeft);
+}
+
+function startRest(seconds, exerciseName) {
+  timerSecondsLeft = seconds;
+  timerExercise.textContent = exerciseName;
+  updateTimerDisplay();
+  timerOverlay.classList.add('active');
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(tick, 1000);
+}
+
+function tick() {
+  timerSecondsLeft--;
+  if (timerSecondsLeft <= 0) {
+    timerSecondsLeft = 0;
+    updateTimerDisplay();
+    clearInterval(timerInterval);
+    timerInterval = null;
+    playBeep();
+    setTimeout(() => timerOverlay.classList.remove('active'), 1500);
+    return;
+  }
+  updateTimerDisplay();
+}
+
+document.getElementById('timerAdd').onclick = () => { timerSecondsLeft += 15; updateTimerDisplay(); };
+document.getElementById('timerSub').onclick = () => {
+  timerSecondsLeft = Math.max(1, timerSecondsLeft - 15); updateTimerDisplay();
+};
+document.getElementById('timerSkip').onclick = () => {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+  timerOverlay.classList.remove('active');
+};
+
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.type = 'sine'; o.frequency.value = 880;
+    g.gain.setValueAtTime(0.001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+    o.start(); o.stop(ctx.currentTime + 0.9);
+  } catch (e) {}
+  if (navigator.vibrate) navigator.vibrate([200, 80, 200]);
+}
+
+render();
+// Set initial week button state
+document.getElementById('week1Btn').classList.toggle('active', activeWeek === 0);
+document.getElementById('week2Btn').classList.toggle('active', activeWeek === 1);
+</script>
+</body>
+</html>
